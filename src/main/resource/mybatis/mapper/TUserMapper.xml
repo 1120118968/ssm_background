@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间需要填所对应的映射接口-->
+<mapper namespace="com.czq.ssm.mapper.TUserMapper">
+    <!--这里是映射实体类的结果集 -->
+    <resultMap id="BaseResultMap" type="com.czq.ssm.model.TUserDo">
+        <!--  id:对应的是mysql中的主键,column:对应的是mysql中的列名,jdbcType:对应的是mysql中的数据类型 property:对应的是实体类中的属性名-->
+        <id column="u_id" jdbcType="INTEGER" property="uid"/>
+        <!--mysql中的非主键列名使用result标签即可-->
+        <result column="u_name" jdbcType="VARCHAR" property="uName"/>
+        <result column="u_age" jdbcType="INTEGER" property="uAge"/>
+        <result column="u_sex" jdbcType="VARCHAR" property="uSex"/>
+    </resultMap>
+
+    <!-- id:对应的是java映射接口中的方法名  parameterType:对应的是方法中的参数类型
+    resultMap:对应的是返回值，该方法返回的是实体类，而实体类在该映射文件中的 结果集的id为BaseResultMap-->
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select * from user where u_id = #{uid,jdbcType=INTEGER}
+    </select>
+
+    <!-- 在执行insert delete update标签的时候 无需定义resultMap 默认会返回int类型的resultMap, 返回值大于0则表示操作成功-->
+    <insert id="insertSelective" parameterType="com.czq.ssm.model.TUserDo">
+        insert into user
+        <!--在映射文件中执行sal语句时，可以像写java一样写一些判断语句，这也是mybatis的优势之一-->
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="uName != null">
+                u_name,
+            </if>
+            <if test="uAge != null">
+                u_age,
+            </if>
+            <if test="uSex != null">
+                u_sex,
+            </if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+
+            <if test="uName != null">
+                #{uName,jdbcType=VARCHAR},
+            </if>
+            <if test="uAge != null">
+                #{uAge,jdbcType=INTEGER},
+            </if>
+            <if test="uSex != null">
+                #{uSex,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from user where u_id = #{uid,jdbcType=BIGINT}
+    </delete>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.czq.ssm.model.TUserDo">
+        update user
+        <set>
+            <if test="uName != null">
+                u_name= #{uName,jdbcType=VARCHAR},
+            </if>
+            <if test="uAge != null">
+                u_age=#{uAge,jdbcType=INTEGER},
+            </if>
+            <if test="uSex != null">
+                u_sex=#{uSex,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where u_id = #{uid,jdbcType=BIGINT}
+    </update>
+
+</mapper>
